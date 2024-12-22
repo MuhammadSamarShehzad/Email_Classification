@@ -1,4 +1,4 @@
-![banner](https://github.com/user-attachments/assets/b5b46438-1fe8-4021-9edc-5e57beaf4b88)# 📧 Spam Email Detection with Machine Learning
+📧 Spam Email Detection with Machine Learning
 
 ![banner](https://github.com/user-attachments/assets/3c914fc9-5c9d-4fab-b1a1-a428c6d54bfd)
 
