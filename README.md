@@ -1,19 +1,96 @@
-📧 Spam Email Detection with Machine Learning
+📧 Email Spam Classification using Multinomial Naive Bayes
 
-![banner](https://github.com/user-attachments/assets/3c914fc9-5c9d-4fab-b1a1-a428c6d54bfd)
+Welcome to the Email Spam Classification project! This repository demonstrates how to classify emails as spam or not spam using the Multinomial Naive Bayes algorithm.
 
+🚀 Features
 
-**Welcome to the Spam Email Detection Project!**  
-This project is part of my virtual internship at **Ezitech Institute**, a subsidiary of **Eziline Software House**.  
-Ezitech Institute, founded in 2015, is dedicated to empowering aspiring young talents with the essential skills needed in the ever-evolving field of technology. Their internship programs are designed to provide practical experience and prepare students for the challenges of the IT sector.
+🛠 Preprocessing: Tokenization, stop-word removal, and TF-IDF vectorization.
 
----
+🤖 Model: Implementation of a Multinomial Naive Bayes classifier.
 
-### About the Project  
-This project leverages a Kaggle dataset to develop a machine learning model that accurately detects spam emails. The goal is to enhance email filtering systems by employing modern techniques in natural language processing and machine learning.
+📊 Evaluation: Metrics like accuracy, precision, recall, and F1-score to measure performance.
 
-**Dataset Source:** [Spam Email Dataset on Kaggle](https://www.kaggle.com/datasets/mfaisalqureshi/spam-email)  
+📂 Dataset
 
-**Technologies Used:** Python, Scikit-learn, Pandas, and more.
+The dataset comprises labeled emails categorized as spam or not spam. It is preprocessed and divided into training and testing sets to ensure reliable evaluation.
 
----
+🛠 Installation
+
+Clone the repository:
+
+git clone https://github.com/your-repo/email-spam-classification.git
+
+Navigate to the project directory:
+
+cd email-spam-classification
+
+Install the required dependencies:
+
+pip install -r requirements.txt
+
+📝 Usage
+
+Ensure all dependencies are installed.
+
+Train the model:
+
+python train_model.py
+
+Evaluate the model:
+
+python evaluate_model.py
+
+📊 Results
+
+The model achieved the following performance metrics:
+
+Metric
+
+Value
+
+Accuracy
+
+98.7%
+
+Precision
+
+96.5%
+
+Recall
+
+95.2%
+
+F1 Score
+
+95.8%
+
+📚 Kaggle Notebook
+
+Explore the full implementation and results on Kaggle:
+
+🔗 Email Spam Classification using Multinomial Naive Bayes
+
+📁 File Structure
+
+email-spam-classification/
+├── data/               # Dataset folder
+├── scripts/            # Scripts for preprocessing, training, and evaluation
+├── requirements.txt    # List of dependencies
+├── README.md           # Project documentation
+├── train_model.py      # Training script
+├── evaluate_model.py   # Evaluation script
+
+🤝 Contributing
+
+Contributions are always welcome! Feel free to:
+
+Submit a pull request 🛠
+
+Open an issue if you encounter any problems 🐛
+
+📝 License
+
+This project is licensed under the MIT License. See the LICENSE file for more details.
+
+💡 Happy Coding! 🚀
+
