@@ -55,16 +55,4 @@ Spam emails are a persistent problem in today's digital age, leading to wasted t
 
 The Multinomial Naive Bayes model achieved impressive results in detecting spam emails, showcasing its potential for deployment in real-world applications. For detailed performance metrics and implementation, refer to the Kaggle notebook linked above.  
 
----
-
-## 📜 License  
-
-This project is open-source and available under the [MIT License](LICENSE). Feel free to use and contribute!  
-
----
-
-## 🙌 Acknowledgments  
-
-I would like to thank **Ezitech Institute** and **Eziline Software House** for providing this learning opportunity. A special thanks to Kaggle for hosting the datasets and creating a platform for data science collaboration.  
-
 Happy Learning! 🚀
