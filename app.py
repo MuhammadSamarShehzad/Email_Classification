@@ -2,151 +2,168 @@ import streamlit as st
 import joblib
 import numpy as np
 
-# Load the pre-trained model and vectorizer
-model = joblib.load('spam_detector_model.pkl')
-vectorizer = joblib.load('vectorizer.pkl')
+# --------------------  Setup  --------------------
+st.set_page_config(
+    page_title="Spam Email Detector",
+    page_icon="📧",
+    layout="wide"
+)
 
-# Set the page title and layout, also set the favicon (using an emoji for simplicity)
-st.set_page_config(page_title="Spam Email Detection", layout="wide", page_icon="📧")
-
-# Add modern, elegant styling
+# --------------------  Styles  --------------------
 st.markdown("""
-    <style>
-    /* Modern header */
-    .header {
-        text-align: center;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 48px;
-        color: #34495E;
-        font-weight: bold;
-        margin-top: 20px;
-        letter-spacing: 1px;
-    }
-    .sub-header {
-        text-align: center;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 24px;
-        color: #7F8C8D;
-        margin-top: 10px;
-        font-weight: 500;
-    }
-
-    /* Description text */
-    .description {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 18px;
-        color: #2C3E50;
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    /* Input area */
-    .input-box {
-        text-align: center;
-        margin-top: 30px;
-    }
-
-    /* Button style */
-    .predict-button {
-        background-color: #3498DB;
-        color: white;
-        font-size: 18px;
-        padding: 12px 24px;
-        border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        font-weight: bold;
-        box-shadow: 0px 10px 20px rgba(52, 152, 219, 0.2);
-    }
-
-    .predict-button:hover {
-        background-color: #2980B9;
-        box-shadow: 0px 15px 25px rgba(52, 152, 219, 0.3);
-    }
-
-    /* Footer style */
-    .footer {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 16px;
-        text-align: center;
-        color: #BDC3C7;
-        margin-top: 50px;
-        background-color: #2C3E50;
-        padding: 20px 0;
-        border-radius: 5px;
-        box-shadow: 0px -5px 15px rgba(0, 0, 0, 0.1);
-    }
-    .footer a {
-        color: #E67E22;
-        text-decoration: none;
-        font-weight: bold;
-    }
-    .footer a:hover {
-        text-decoration: underline;
-    }
-    </style>
+<style>
+:root{
+  --bg: #0f172a;
+  --fg: #e2e8f0;
+  --card: rgba(255,255,255,0.06);
+  --accent: #3b82f6;
+  --accent-dark: #1d4ed8;
+  --danger: #ef4444;
+  --safe: #22c55e;
+  --muted: #94a3b8;
+  --radius: 16px;
+  --font: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+}
+html, body, [data-testid="stAppViewContainer"]{
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+  color: var(--fg);
+  font-family: var(--font);
+}
+h1, h2, h3, h4, h5, h6 { color: var(--fg); }
+.block-container{
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.card{
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+  padding: 1.75rem 1.5rem;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.header-title{
+  font-size: 3rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: -0.02em;
+  margin-bottom: .25rem;
+}
+.sub{
+  text-align:center;
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+textarea{
+  border-radius: var(--radius) !important;
+}
+.stTextArea textarea{
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--fg);
+}
+.stButton>button{
+  background: var(--accent);
+  color: white;
+  border: 0;
+  padding: .75rem 1.25rem;
+  font-weight: 600;
+  border-radius: .75rem;
+  transition: all .15s ease;
+  box-shadow: 0 8px 16px rgba(59,130,246,0.2);
+}
+.stButton>button:hover{
+  background: var(--accent-dark);
+  box-shadow: 0 12px 24px rgba(59,130,246,0.25);
+}
+.badge{
+  display:inline-block;
+  padding:.35rem .75rem;
+  border-radius:9999px;
+  font-weight:600;
+  color:white;
+  margin-bottom:.75rem;
+}
+.badge.spam{ background: var(--danger); }
+.badge.ham{ background: var(--safe); }
+footer, .viewerBadge_container__1QSob, .stDeployButton { display: none !important; }
+.footer{
+  margin-top:3rem; text-align:center; color:var(--muted); font-size:.9rem;
+}
+</style>
 """, unsafe_allow_html=True)
 
-# Header
-st.markdown('<div class="header">Spam Email Detection</div>', unsafe_allow_html=True)
+# --------------------  Load artifacts  --------------------
+@st.cache_resource
+def load_artifacts():
+    model = joblib.load('spam_detector_model.pkl')
+    vectorizer = joblib.load('vectorizer.pkl')
+    return model, vectorizer
 
-# Subheader with improved color and font weight
-st.markdown('<div class="sub-header">Classify emails as <strong>Spam</strong> or <strong>Ham (Not Spam)</strong></div>', unsafe_allow_html=True)
+model, vectorizer = load_artifacts()
 
-# Description section with improved text styling
-st.markdown('<div class="description">Simply paste the email text below, and our model will predict whether it\'s Spam or Ham.</div>', unsafe_allow_html=True)
+# --------------------  UI  --------------------
+st.markdown('<div class="header-title">Spam Email Detector</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub">Paste email content below to classify it as <strong>Spam</strong> or <strong>Ham</strong>.</div>', unsafe_allow_html=True)
 
-# Add a stylish input box for email text
-email_text = st.text_area("Enter the email content:", height=200)
+with st.container():
+    with st.spinner(""):
+        email_text = st.text_area("Email content", height=220, placeholder="Paste the email body here...")
 
-# Add a submit button with modern style
-if st.button('Predict', key="predict_button", help="Click to classify the email"):
-    if email_text:
-        # Transform the input using the vectorizer
-        email_vector = vectorizer.transform([email_text])
+col1, col2, col3 = st.columns([1,2,1])
+with col2:
+    predict = st.button("Predict 🔍", use_container_width=True)
 
-        # Predict using the loaded model
-        prediction = model.predict(email_vector)
-        prediction_proba = model.predict_proba(email_vector)  # Get probability values
-
-        if prediction[0] == 1:
-            # Spam detected
-            probability = prediction_proba[0][1] * 100  # Probability for Spam (1)
-            st.markdown(
-                f'''
-                <div style="text-align:center; background-color:#FF6F61; padding: 20px; border-radius: 10px; border: 2px solid red; box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.5);">
-                    <h3 style="color: white; font-family: 'Segoe UI', sans-serif;">🚨 Spam Email Detected</h3>
-                    <p style="font-size: 18px; color: white; font-weight: bold;"> 
-                        <span style="font-size: 22px; color: white;">Probability:</span> {probability:.2f}%
-                    </p>
-                    <p style="font-size: 16px; color: white;">This email is likely to be spam. Please be cautious! 🚫</p>
-                </div>
-                ''',
-                unsafe_allow_html=True
-            )
-        else:
-            # Ham detected
-            probability = prediction_proba[0][0] * 100  # Probability for Ham (0)
-            st.markdown(
-                f'''
-                <div style="text-align:center; background-color:#2ECC71; padding: 20px; border-radius: 10px; border: 2px solid green; box-shadow: 0px 0px 10px rgba(0, 255, 0, 0.5);">
-                    <h3 style="color: white; font-family: 'Segoe UI', sans-serif;">✔️ Ham Email (Not Spam)</h3>
-                    <p style="font-size: 18px; color: white; font-weight: bold;"> 
-                        <span style="font-size: 22px; color: white;">Probability:</span> {probability:.2f}%
-                    </p>
-                    <p style="font-size: 16px; color: white;">This email appears safe. You can trust it! ✅</p>
-                </div>
-                ''',
-                unsafe_allow_html=True
-            )
-    else:
+# --------------------  Inference  --------------------
+if predict:
+    if not email_text.strip():
         st.error("Please enter an email message to classify.")
+    else:
+        email_vector = vectorizer.transform([email_text])
+        pred = model.predict(email_vector)[0]
 
-# Add footer with an elegant design and modern colors
-st.markdown("""
-    <div class="footer">
-        <p><strong>Spam Email Detection Project</strong><br>
-        Developed as part of the virtual internship at <a href="https://ezitech.org" target="_blank">Ezitech Institute</a>.<br>
-        Model: <strong>Multinomial Naive Bayes</strong></p>
-    </div>
-""", unsafe_allow_html=True)
+        if hasattr(model, "predict_proba"):
+            proba = model.predict_proba(email_vector)[0]
+        else:
+            # Fallback if the model doesn't expose probabilities
+            proba = np.array([1.0, 0.0]) if pred == 0 else np.array([0.0, 1.0])
+
+        is_spam = int(pred) == 1
+        spam_prob = float(proba[1]) * 100
+        ham_prob = float(proba[0]) * 100
+
+        # Result Card
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        if is_spam:
+            st.markdown('<span class="badge spam">🚨 Spam detected</span>', unsafe_allow_html=True)
+            st.markdown("### This email is likely **Spam**.")
+            st.progress(min(int(spam_prob), 100))
+            st.metric("Spam probability", f"{spam_prob:.2f}%")
+            st.caption("Be cautious with links, attachments, and requests for sensitive information.")
+            st.snow()
+        else:
+            st.markdown('<span class="badge ham">✅ Ham (Not Spam)</span>', unsafe_allow_html=True)
+            st.markdown("### This email appears **Safe**.")
+            st.progress(min(int(ham_prob), 100))
+            st.metric("Ham probability", f"{ham_prob:.2f}%")
+            st.caption("Always stay alert for phishing patterns even in legitimate-looking emails.")
+            st.balloons()
+
+        # Show both probabilities in columns
+        p1, p2 = st.columns(2)
+        with p1:
+            st.metric("Ham (Not Spam)", f"{ham_prob:.2f}%")
+        with p2:
+            st.metric("Spam", f"{spam_prob:.2f}%")
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# --------------------  Info  --------------------
+with st.expander("ℹ️ How it works"):
+    st.write("""
+    - Your text is vectorized using the same technique used during training (e.g., TF‑IDF).
+    - The trained model (e.g., Multinomial Naive Bayes) outputs a class and probabilities.
+    - Results are shown with a clean, minimal, glassmorphic UI.
+    """)
+
+st.markdown('<div class="footer">© 2025 • Spam Email Detector</div>', unsafe_allow_html=True)
